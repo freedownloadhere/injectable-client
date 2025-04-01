@@ -40,7 +40,7 @@ void DoStuff(JNIEnv* env) {
 	
 	std::cout << "Starting Killaura..\n";
 
-	const double MaxDistance = 20.0;
+	const double MaxDistance = 3.0;
 
 	while (!GetAsyncKeyState(VK_OEM_3)) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -80,6 +80,8 @@ void DoStuff(JNIEnv* env) {
 			jobject oAttackPacket = env->NewObject(cC02PacketUseEntity, mC02PacketUseEntity, oEntity, oC02PacketUseEntityAttack);
 
 			env->CallVoidMethod(oSendQueue, mAddToSendQueue, oAttackPacket);
+
+			env->DeleteLocalRef(oAttackPacket);
 		}
 	}
 }
