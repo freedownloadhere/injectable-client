@@ -10,7 +10,7 @@ void DoStuff(JNIEnv* env) {
 	jclass cC02PacketUseEntity			= env->FindClass("in");
 	jclass cC02PacketUseEntityAction	= env->FindClass("in$a");
 	jclass cEntity						= env->FindClass("pk");
-	jclass cEntityLiving				= env->FindClass("ps");
+	jclass cEntityLivingBase			= env->FindClass("pr");
 	jclass cEntityPlayerSP				= env->FindClass("bew");
 	jclass cList						= env->FindClass("java/util/List");
 	jclass cMinecraft					= env->FindClass("ave");
@@ -63,7 +63,7 @@ void DoStuff(JNIEnv* env) {
 		for (int i = 0; i < oListSize; i++) {
 			jobject oEntity = env->CallObjectMethod(oLoadedEntityList, mListGet, i);
 
-			jboolean oIsEntityLiving = env->IsInstanceOf(oEntity, cEntityLiving);
+			jboolean oIsEntityLiving = env->IsInstanceOf(oEntity, cEntityLivingBase);
 			if (!oIsEntityLiving) continue;
 
 			jboolean oIsEntityYou = env->CallBooleanMethod(oEntity, mEquals, oThePlayer);
