@@ -20,6 +20,26 @@ namespace Killaura {
 		return true;
 	}
 
+	static bool distanceCheck(jobject oEntity, jobject oPlayerVec) {
+		jobject oEntityVec = Java::env->CallObjectMethod(oEntity, Java::mGetPositionVector);
+
+		jdouble oDistance = Java::env->CallDoubleMethod(oEntityVec, Java::mDistanceTo, oPlayerVec);
+		if (oDistance > MaxDistance) return false;
+	}
+
+	static void simulateAttack(jobject oEntity, jobject oThePlayer, jobject oSendQueue) {
+		jobject oAttackPacket = Java::env->NewObject(
+			Java::cC02PacketUseEntity, Java::mC02PacketUseEntity, 
+			oEntity, Java::oC02PacketUseEntityAttack
+		);
+
+		Java::env->CallVoidMethod(oThePlayer, Java::mSwingItem);
+
+		Java::env->CallVoidMethod(oSendQueue, Java::mAddToSendQueue, oAttackPacket);
+
+		Java::env->DeleteLocalRef(oAttackPacket);
+	}
+
 	void update() {
 		jobject oMinecraft = Java::env->CallStaticObjectMethod(Java::cMinecraft, Java::mGetMinecraft);
 		if (oMinecraft == nullptr) return;
@@ -41,21 +61,9 @@ namespace Killaura {
 
 			if (!goodEntityCheck(oEntity, oThePlayer)) continue;
 
-			jobject oEntityVec = Java::env->CallObjectMethod(oEntity, Java::mGetPositionVector);
+			if (!distanceCheck(oEntity, oPlayerVec)) continue;
 
-			jdouble oDistance = Java::env->CallDoubleMethod(oEntityVec, Java::mDistanceTo, oPlayerVec);
-			if (oDistance > MaxDistance) continue;
-			std::cout << "entity is close enough\n";
-
-			std::cout << "Attacking..\n";
-
-			jobject oAttackPacket = Java::env->NewObject(Java::cC02PacketUseEntity, Java::mC02PacketUseEntity, oEntity, Java::oC02PacketUseEntityAttack);
-
-			Java::env->CallVoidMethod(oThePlayer, Java::mSwingItem);
-
-			Java::env->CallVoidMethod(oSendQueue, Java::mAddToSendQueue, oAttackPacket);
-
-			Java::env->DeleteLocalRef(oAttackPacket);
+			simulateAttack(oEntity, oThePlayer, oSendQueue);
 		}
 	}
 }

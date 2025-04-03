@@ -6,6 +6,11 @@
 
 #include "jni.h"
 
+/// <summary>
+/// Some naming conventions (prefixes) are used:
+/// c for class, m for method ID, f for field ID and o for object.
+/// I will try to stick as closely as possible to the original Java names.
+/// </summary>
 namespace Java {
 	JavaVM* jvm = nullptr;
 	JNIEnv* env = nullptr;
@@ -52,36 +57,36 @@ namespace Java {
 			return false;
 		}
 
-		cC02PacketUseEntity = env->FindClass("in");
-		cC02PacketUseEntityAction = env->FindClass("in$a");
-		cEntity = env->FindClass("pk");
-		cEntityLivingBase = env->FindClass("pr");
-		cEntityPlayerSP = env->FindClass("bew");
-		cList = env->FindClass("java/util/List");
-		cMinecraft = env->FindClass("ave");
-		cNetHandlerPlayClient = env->FindClass("bcy");
-		cObject = env->FindClass("java/lang/Object");
-		cVec3 = env->FindClass("aui");
-		cWorldClient = env->FindClass("bdb");
+		cC02PacketUseEntity			= env->FindClass("in");
+		cC02PacketUseEntityAction	= env->FindClass("in$a");
+		cEntity						= env->FindClass("pk");
+		cEntityLivingBase			= env->FindClass("pr");
+		cEntityPlayerSP				= env->FindClass("bew");
+		cList						= env->FindClass("java/util/List");
+		cMinecraft					= env->FindClass("ave");
+		cNetHandlerPlayClient		= env->FindClass("bcy");
+		cObject						= env->FindClass("java/lang/Object");
+		cVec3						= env->FindClass("aui");
+		cWorldClient				= env->FindClass("bdb");
 
-		mAddToSendQueue = env->GetMethodID(cNetHandlerPlayClient, "a", "(Lff;)V");
-		mC02PacketUseEntity = env->GetMethodID(cC02PacketUseEntity, "<init>", "(Lpk;Lin$a;)V");
-		mDistanceTo = env->GetMethodID(cVec3, "f", "(Laui;)D");
-		mEquals = env->GetMethodID(cObject, "equals", "(Ljava/lang/Object;)Z");
-		mGetMinecraft = env->GetStaticMethodID(cMinecraft, "A", "()Lave;");
-		mGetPositionVector = env->GetMethodID(cEntity, "d", "()Laui;");
-		mListGet = env->GetMethodID(cList, "get", "(I)Ljava/lang/Object;");
-		mListSize = env->GetMethodID(cList, "size", "()I");
-		mSwingItem = env->GetMethodID(cEntityLivingBase, "bw", "()V");
+		mAddToSendQueue				= env->GetMethodID(cNetHandlerPlayClient, "a", "(Lff;)V");
+		mC02PacketUseEntity			= env->GetMethodID(cC02PacketUseEntity, "<init>", "(Lpk;Lin$a;)V");
+		mDistanceTo					= env->GetMethodID(cVec3, "f", "(Laui;)D");
+		mEquals						= env->GetMethodID(cObject, "equals", "(Ljava/lang/Object;)Z");
+		mGetMinecraft				= env->GetStaticMethodID(cMinecraft, "A", "()Lave;");
+		mGetPositionVector			= env->GetMethodID(cEntity, "d", "()Laui;");
+		mListGet					= env->GetMethodID(cList, "get", "(I)Ljava/lang/Object;");
+		mListSize					= env->GetMethodID(cList, "size", "()I");
+		mSwingItem					= env->GetMethodID(cEntityLivingBase, "bw", "()V");
 
-		fC02PacketUseEntityAttack = env->GetStaticFieldID(cC02PacketUseEntityAction, "b", "Lin$a;");
-		fIsDead = env->GetFieldID(cEntity, "I", "Z");
-		fLoadedEntityList = env->GetFieldID(cWorldClient, "f", "Ljava/util/List;");
-		fSendQueue = env->GetFieldID(cEntityPlayerSP, "a", "Lbcy;");
-		fThePlayer = env->GetFieldID(cMinecraft, "h", "Lbew;");
-		fTheWorld = env->GetFieldID(cMinecraft, "f", "Lbdb;");
+		fC02PacketUseEntityAttack	= env->GetStaticFieldID(cC02PacketUseEntityAction, "b", "Lin$a;");
+		fIsDead						= env->GetFieldID(cEntity, "I", "Z");
+		fLoadedEntityList			= env->GetFieldID(cWorldClient, "f", "Ljava/util/List;");
+		fSendQueue					= env->GetFieldID(cEntityPlayerSP, "a", "Lbcy;");
+		fThePlayer					= env->GetFieldID(cMinecraft, "h", "Lbew;");
+		fTheWorld					= env->GetFieldID(cMinecraft, "f", "Lbdb;");
 
-		oC02PacketUseEntityAttack = env->GetStaticObjectField(cC02PacketUseEntityAction, fC02PacketUseEntityAttack);
+		oC02PacketUseEntityAttack	= env->GetStaticObjectField(cC02PacketUseEntityAction, fC02PacketUseEntityAttack);
 
 		return true;
 	}
