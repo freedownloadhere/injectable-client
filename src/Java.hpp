@@ -56,11 +56,14 @@ namespace Java {
 	jfieldID fTypeOfHit = nullptr;
 	
 	jobject oC02PacketUseEntityAttack = nullptr;
+	const double oEyeHeight = 1.625;
 	jobject oEyeHeightVector = nullptr;
 	jobject oMovingObjectPositionTypeEntity = nullptr;
 
-	// temporary hardcode might be better?
-	const double oEyeHeight = 1.625;
+	enum Flags {
+		NONE = 0,
+		STATIC = (1 << 0)
+	};
 
 	/// <summary>
 	/// code by Lefraudeur :
@@ -105,7 +108,9 @@ namespace Java {
 		return foundclass;
 	}
 
-	static jmethodID getMethodID(jclass clazz, const std::string& name, const std::string& sig, bool isStatic = false) {
+	static jmethodID getMethodID(jclass clazz, const std::string& name, const std::string& sig, Flags flags = Flags::NONE) {
+		const bool isStatic = flags & Flags::STATIC;
+
 		jmethodID method = nullptr;
 		if (isStatic) {
 			method = env->GetStaticMethodID(clazz, name.c_str(), sig.c_str());
@@ -120,7 +125,9 @@ namespace Java {
 		return method;
 	}
 
-	static jfieldID getFieldID(jclass clazz, const std::string& name, const std::string& sig, bool isStatic = false) {
+	static jfieldID getFieldID(jclass clazz, const std::string& name, const std::string& sig, Flags flags = Flags::NONE) {
+		const bool isStatic = flags & Flags::STATIC;
+
 		jfieldID field = nullptr;
 		if (isStatic) {
 			field = env->GetStaticFieldID(clazz, name.c_str(), sig.c_str());
@@ -136,16 +143,12 @@ namespace Java {
 		return field;
 	}
 
-	bool init() {
-		if (JNI_GetCreatedJavaVMs(&jvm, 1, nullptr) != JNI_OK) {
-			std::cerr << "[Java] Error: could not get created Java VMs\n";
-			return false;
-		}
+	void init() {
+		if (JNI_GetCreatedJavaVMs(&jvm, 1, nullptr) != JNI_OK)
+			throw JavaException("Could not get Java VM");
 
-		if (jvm->AttachCurrentThread((void**)&env, nullptr) != JNI_OK) {
-			std::cerr << "[Java] Error: could not attach current thread\n";
-			return false;
-		}
+		if (jvm->AttachCurrentThread((void**)&env, nullptr) != JNI_OK)
+			throw JavaException("Could not attach to current thread");
 
 		cC02PacketUseEntity			= findClass("in");
 		cC02PacketUseEntityAction	= findClass("in$a");
@@ -165,7 +168,7 @@ namespace Java {
 		mC02PacketUseEntity			= getMethodID(cC02PacketUseEntity, "<init>", "(Lpk;Lin$a;)V");
 		mDistanceTo					= getMethodID(cVec3, "f", "(Laui;)D");
 		mEquals						= getMethodID(cObject, "equals", "(Ljava/lang/Object;)Z");
-		mGetMinecraft				= getMethodID(cMinecraft, "A", "()Lave;", true);
+		mGetMinecraft				= getMethodID(cMinecraft, "A", "()Lave;", Flags::STATIC);
 		mGetPositionVector			= getMethodID(cEntity, "d", "()Laui;");
 		mListGet					= getMethodID(cList, "get", "(I)Ljava/lang/Object;");
 		mListSize					= getMethodID(cList, "size", "()I");
@@ -174,10 +177,10 @@ namespace Java {
 		mVec3						= getMethodID(cVec3, "<init>", "(DDD)V");
 		mVec3Add					= getMethodID(cVec3, "e", "(Laui;)Laui;");
 
-		fC02PacketUseEntityAttack		= getFieldID(cC02PacketUseEntityAction, "b", "Lin$a;", true);
+		fC02PacketUseEntityAttack		= getFieldID(cC02PacketUseEntityAction, "b", "Lin$a;", Flags::STATIC);
 		fIsDead							= getFieldID(cEntity, "I", "Z");
 		fLoadedEntityList				= getFieldID(cWorldClient, "f", "Ljava/util/List;");
-		fMovingObjectPositionTypeEntity = getFieldID(cMovingObjectPositionType, "c", "Lauh$a;", true);
+		fMovingObjectPositionTypeEntity = getFieldID(cMovingObjectPositionType, "c", "Lauh$a;", Flags::STATIC);
 		fSendQueue						= getFieldID(cEntityPlayerSP, "a", "Lbcy;");
 		fThePlayer						= getFieldID(cMinecraft, "h", "Lbew;");
 		fTheWorld						= getFieldID(cMinecraft, "f", "Lbdb;");
@@ -186,7 +189,5 @@ namespace Java {
 		oC02PacketUseEntityAttack		= env->GetStaticObjectField(cC02PacketUseEntityAction, fC02PacketUseEntityAttack);
 		oEyeHeightVector				= env->NewObject(cVec3, mVec3, 0.0, oEyeHeight, 0.0);
 		oMovingObjectPositionTypeEntity = env->GetStaticObjectField(cMovingObjectPositionType, fMovingObjectPositionTypeEntity);
-
-		return true;
 	}
 }
