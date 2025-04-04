@@ -15,7 +15,15 @@ void MainButForReal(HINSTANCE instance) {
 	freopen_s(&out, "CONOUT$", "w", stdout);
 	freopen_s(&err, "CONOUT$", "w", stderr);
 
-	Java::init();
+	try {
+		Java::init();
+	}
+	catch(const JavaException& e) {
+		std::cerr << "Java Error: " << e.what() << '\n';
+		std::cerr << "(Press enter to finish..)\n";
+		std::cin.get();
+		goto finish;
+	}
 
 	std::cout << "Starting...\n";
 	while (!GetAsyncKeyState(VK_OEM_3)) {

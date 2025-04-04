@@ -26,5 +26,8 @@
     <ClInclude Include="src\Killaura.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\JavaException.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

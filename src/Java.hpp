@@ -3,8 +3,12 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <unordered_map>
 
 #include "jni.h"
+#include "jvmti.h"
+
+#include "JavaException.hpp"
 
 /// <summary>
 /// Some naming conventions (prefixes) are used:
@@ -22,6 +26,8 @@ namespace Java {
 	jclass cEntityPlayerSP = nullptr;
 	jclass cList = nullptr;
 	jclass cMinecraft = nullptr;
+	jclass cMovingObjectPosition = nullptr;
+	jclass cMovingObjectPositionType = nullptr;
 	jclass cNetHandlerPlayClient = nullptr;
 	jclass cObject = nullptr;
 	jclass cVec3 = nullptr;
@@ -35,16 +41,100 @@ namespace Java {
 	jmethodID mGetPositionVector = nullptr;
 	jmethodID mListGet = nullptr;
 	jmethodID mListSize = nullptr;
+	jmethodID mRayTraceBlocks = nullptr;
 	jmethodID mSwingItem = nullptr;
+	jmethodID mVec3 = nullptr;
+	jmethodID mVec3Add = nullptr;
 
 	jfieldID fC02PacketUseEntityAttack = nullptr;
 	jfieldID fIsDead = nullptr;
 	jfieldID fLoadedEntityList = nullptr;
+	jfieldID fMovingObjectPositionTypeEntity = nullptr;
 	jfieldID fSendQueue = nullptr;
 	jfieldID fThePlayer = nullptr;
 	jfieldID fTheWorld = nullptr;
+	jfieldID fTypeOfHit = nullptr;
 	
 	jobject oC02PacketUseEntityAttack = nullptr;
+	jobject oEyeHeightVector = nullptr;
+	jobject oMovingObjectPositionTypeEntity = nullptr;
+
+	// temporary hardcode might be better?
+	const double oEyeHeight = 1.625;
+
+	/// <summary>
+	/// code by Lefraudeur :
+	/// https://github.com/Lefraudeur 
+	/// </summary>
+	static jclass findClass(const std::string& path) {
+		static std::unordered_map<std::string, jclass> classMap;
+
+		if (classMap.empty()) {
+			JavaVM* jvm = nullptr;
+			env->GetJavaVM(&jvm);
+			jvmtiEnv* tienv = nullptr;
+			jvm->GetEnv((void**)&tienv, JVMTI_VERSION_1_2);
+			jint classCount = 0;
+			jclass* classes = nullptr;
+			tienv->GetLoadedClasses(&classCount, &classes);
+			jclass ClassClass = env->FindClass("java/lang/Class");
+			jmethodID getName = env->GetMethodID(ClassClass, "getName", "()Ljava/lang/String;");
+
+			for (int i = 0; i < classCount; ++i) {
+				jstring name = (jstring)env->CallObjectMethod(classes[i], getName);
+				const char* chars = env->GetStringUTFChars(name, nullptr);
+				jsize size = env->GetStringUTFLength(name);
+				std::string className(chars, size);
+				env->ReleaseStringUTFChars(name, chars);
+				for (char& character : className) {
+					if (character == '.') 
+						character = '/';
+				}
+				classMap.insert({ className, classes[i] });
+			}
+			tienv->Deallocate((unsigned char*)classes);
+		}
+
+		jclass foundclass = nullptr;
+
+		if (!classMap.count(path)) {
+			throw JavaException("Class was not found: " + path);
+		}
+
+		foundclass = classMap.at(path);
+		return foundclass;
+	}
+
+	static jmethodID getMethodID(jclass clazz, const std::string& name, const std::string& sig, bool isStatic = false) {
+		jmethodID method = nullptr;
+		if (isStatic) {
+			method = env->GetStaticMethodID(clazz, name.c_str(), sig.c_str());
+		} else {
+			method = env->GetMethodID(clazz, name.c_str(), sig.c_str());
+		}
+
+		if (method == nullptr) {
+			throw JavaException("Method was not found : name " + name + " : signature " + sig + (isStatic ? " : static" : ""));
+		}
+
+		return method;
+	}
+
+	static jfieldID getFieldID(jclass clazz, const std::string& name, const std::string& sig, bool isStatic = false) {
+		jfieldID field = nullptr;
+		if (isStatic) {
+			field = env->GetStaticFieldID(clazz, name.c_str(), sig.c_str());
+		}
+		else {
+			field = env->GetFieldID(clazz, name.c_str(), sig.c_str());
+		}
+
+		if (field == nullptr) {
+			throw JavaException("Field was not found : name " + name + " : signature " + sig + (isStatic ? " : static" : ""));
+		}
+
+		return field;
+	}
 
 	bool init() {
 		if (JNI_GetCreatedJavaVMs(&jvm, 1, nullptr) != JNI_OK) {
@@ -57,36 +147,45 @@ namespace Java {
 			return false;
 		}
 
-		cC02PacketUseEntity			= env->FindClass("in");
-		cC02PacketUseEntityAction	= env->FindClass("in$a");
-		cEntity						= env->FindClass("pk");
-		cEntityLivingBase			= env->FindClass("pr");
-		cEntityPlayerSP				= env->FindClass("bew");
-		cList						= env->FindClass("java/util/List");
-		cMinecraft					= env->FindClass("ave");
-		cNetHandlerPlayClient		= env->FindClass("bcy");
-		cObject						= env->FindClass("java/lang/Object");
-		cVec3						= env->FindClass("aui");
-		cWorldClient				= env->FindClass("bdb");
+		cC02PacketUseEntity			= findClass("in");
+		cC02PacketUseEntityAction	= findClass("in$a");
+		cEntity						= findClass("pk");
+		cEntityLivingBase			= findClass("pr");
+		cEntityPlayerSP				= findClass("bew");
+		cList						= findClass("java/util/List");
+		cMinecraft					= findClass("ave");
+		cMovingObjectPosition		= findClass("auh");
+		cMovingObjectPositionType	= findClass("auh$a");
+		cNetHandlerPlayClient		= findClass("bcy");
+		cObject						= findClass("java/lang/Object");
+		cVec3						= findClass("aui");
+		cWorldClient				= findClass("bdb");
 
-		mAddToSendQueue				= env->GetMethodID(cNetHandlerPlayClient, "a", "(Lff;)V");
-		mC02PacketUseEntity			= env->GetMethodID(cC02PacketUseEntity, "<init>", "(Lpk;Lin$a;)V");
-		mDistanceTo					= env->GetMethodID(cVec3, "f", "(Laui;)D");
-		mEquals						= env->GetMethodID(cObject, "equals", "(Ljava/lang/Object;)Z");
-		mGetMinecraft				= env->GetStaticMethodID(cMinecraft, "A", "()Lave;");
-		mGetPositionVector			= env->GetMethodID(cEntity, "d", "()Laui;");
-		mListGet					= env->GetMethodID(cList, "get", "(I)Ljava/lang/Object;");
-		mListSize					= env->GetMethodID(cList, "size", "()I");
-		mSwingItem					= env->GetMethodID(cEntityLivingBase, "bw", "()V");
+		mAddToSendQueue				= getMethodID(cNetHandlerPlayClient, "a", "(Lff;)V");
+		mC02PacketUseEntity			= getMethodID(cC02PacketUseEntity, "<init>", "(Lpk;Lin$a;)V");
+		mDistanceTo					= getMethodID(cVec3, "f", "(Laui;)D");
+		mEquals						= getMethodID(cObject, "equals", "(Ljava/lang/Object;)Z");
+		mGetMinecraft				= getMethodID(cMinecraft, "A", "()Lave;", true);
+		mGetPositionVector			= getMethodID(cEntity, "d", "()Laui;");
+		mListGet					= getMethodID(cList, "get", "(I)Ljava/lang/Object;");
+		mListSize					= getMethodID(cList, "size", "()I");
+		mRayTraceBlocks				= getMethodID(cWorldClient, "a", "(Laui;Laui;)Lauh;");
+		mSwingItem					= getMethodID(cEntityLivingBase, "bw", "()V");
+		mVec3						= getMethodID(cVec3, "<init>", "(DDD)V");
+		mVec3Add					= getMethodID(cVec3, "e", "(Laui;)Laui;");
 
-		fC02PacketUseEntityAttack	= env->GetStaticFieldID(cC02PacketUseEntityAction, "b", "Lin$a;");
-		fIsDead						= env->GetFieldID(cEntity, "I", "Z");
-		fLoadedEntityList			= env->GetFieldID(cWorldClient, "f", "Ljava/util/List;");
-		fSendQueue					= env->GetFieldID(cEntityPlayerSP, "a", "Lbcy;");
-		fThePlayer					= env->GetFieldID(cMinecraft, "h", "Lbew;");
-		fTheWorld					= env->GetFieldID(cMinecraft, "f", "Lbdb;");
+		fC02PacketUseEntityAttack		= getFieldID(cC02PacketUseEntityAction, "b", "Lin$a;", true);
+		fIsDead							= getFieldID(cEntity, "I", "Z");
+		fLoadedEntityList				= getFieldID(cWorldClient, "f", "Ljava/util/List;");
+		fMovingObjectPositionTypeEntity = getFieldID(cMovingObjectPositionType, "c", "Lauh$a;", true);
+		fSendQueue						= getFieldID(cEntityPlayerSP, "a", "Lbcy;");
+		fThePlayer						= getFieldID(cMinecraft, "h", "Lbew;");
+		fTheWorld						= getFieldID(cMinecraft, "f", "Lbdb;");
+		fTypeOfHit						= getFieldID(cMovingObjectPosition, "a", "Lauh$a;");
 
-		oC02PacketUseEntityAttack	= env->GetStaticObjectField(cC02PacketUseEntityAction, fC02PacketUseEntityAttack);
+		oC02PacketUseEntityAttack		= env->GetStaticObjectField(cC02PacketUseEntityAction, fC02PacketUseEntityAttack);
+		oEyeHeightVector				= env->NewObject(cVec3, mVec3, 0.0, oEyeHeight, 0.0);
+		oMovingObjectPositionTypeEntity = env->GetStaticObjectField(cMovingObjectPositionType, fMovingObjectPositionTypeEntity);
 
 		return true;
 	}

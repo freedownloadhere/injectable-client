@@ -11,7 +11,7 @@ namespace Killaura {
 		jboolean oIsEntityLiving = Java::env->IsInstanceOf(oEntity, Java::cEntityLivingBase);
 		if (!oIsEntityLiving) return false;
 
-		jboolean oIsEntityYou = Java::env->CallBooleanMethod(oEntity, Java::mEquals, oThePlayer);
+		jboolean oIsEntityYou = Java::env->IsSameObject(oEntity, oThePlayer);
 		if (oIsEntityYou) return false;
 
 		jboolean oIsEntityDead = Java::env->GetBooleanField(oEntity, Java::fIsDead);
@@ -20,11 +20,20 @@ namespace Killaura {
 		return true;
 	}
 
-	static bool distanceCheck(jobject oEntity, jobject oPlayerVec) {
-		jobject oEntityVec = Java::env->CallObjectMethod(oEntity, Java::mGetPositionVector);
-
+	static bool distanceCheck(jobject oEntityVec, jobject oPlayerVec) {
 		jdouble oDistance = Java::env->CallDoubleMethod(oEntityVec, Java::mDistanceTo, oPlayerVec);
 		if (oDistance > MaxDistance) return false;
+	}
+
+	static bool raycastCheck(jobject oTheWorld, jobject oEntityVec, jobject oPlayerVec) {
+		jobject oMop = Java::env->CallObjectMethod(oTheWorld, Java::mRayTraceBlocks, oPlayerVec, oEntityVec);
+		if (oMop == nullptr) return true;
+
+		jobject oTypeOfHit = Java::env->GetObjectField(oMop, Java::fTypeOfHit);
+
+		jboolean oIsEntityHit = Java::env->IsSameObject(oTypeOfHit, Java::oMovingObjectPositionTypeEntity);
+
+		return oIsEntityHit;
 	}
 
 	static void simulateAttack(jobject oEntity, jobject oThePlayer, jobject oSendQueue) {
@@ -51,6 +60,8 @@ namespace Killaura {
 		if (oTheWorld == nullptr) return;
 
 		jobject oPlayerVec = Java::env->CallObjectMethod(oThePlayer, Java::mGetPositionVector);
+		oPlayerVec = Java::env->CallObjectMethod(oPlayerVec, Java::mVec3Add, Java::oEyeHeightVector);
+
 		jobject oSendQueue = Java::env->GetObjectField(oThePlayer, Java::fSendQueue);
 		jobject oLoadedEntityList = Java::env->GetObjectField(oTheWorld, Java::fLoadedEntityList);
 
@@ -58,10 +69,13 @@ namespace Killaura {
 
 		for (int i = 0; i < oListSize; i++) {
 			jobject oEntity = Java::env->CallObjectMethod(oLoadedEntityList, Java::mListGet, i);
-
 			if (!goodEntityCheck(oEntity, oThePlayer)) continue;
 
-			if (!distanceCheck(oEntity, oPlayerVec)) continue;
+			jobject oEntityVec = Java::env->CallObjectMethod(oEntity, Java::mGetPositionVector);
+			oEntityVec = Java::env->CallObjectMethod(oEntityVec, Java::mVec3Add, Java::oEyeHeightVector);
+			if (!distanceCheck(oEntityVec, oPlayerVec)) continue;
+
+			if (!raycastCheck(oTheWorld, oEntityVec, oPlayerVec)) continue;
 
 			simulateAttack(oEntity, oThePlayer, oSendQueue);
 		}
