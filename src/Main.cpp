@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <chrono>
 #include <iostream>
+#include <assert.h>
 
+#include "Hooks.hpp"
 #include "Java.hpp"
 #include "Killaura.hpp"
 
@@ -17,9 +19,18 @@ void MainButForReal(HINSTANCE instance) {
 
 	try {
 		Java::init();
+		std::cout << "Initialized Java\n";
+		Hooks::init();
+		std::cout << "Initialized Hooks\n";
 	}
 	catch(const JavaException& e) {
 		std::cerr << "Java Error: " << e.what() << '\n';
+		std::cerr << "(Press enter to finish..)\n";
+		std::cin.get();
+		goto finish;
+	}
+	catch (const HooksException& e) {
+		std::cerr << "Hooks Error: " << e.what() << '\n';
 		std::cerr << "(Press enter to finish..)\n";
 		std::cin.get();
 		goto finish;
@@ -33,6 +44,7 @@ void MainButForReal(HINSTANCE instance) {
 	}
 
 finish:
+	Hooks::destroy();
 	if(in) fclose(in);
 	if(out) fclose(out);
 	if(err) fclose(err);

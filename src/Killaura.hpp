@@ -22,7 +22,8 @@ namespace Killaura {
 
 	static bool distanceCheck(jobject oEntityVec, jobject oPlayerVec) {
 		jdouble oDistance = Java::env->CallDoubleMethod(oEntityVec, Java::mDistanceTo, oPlayerVec);
-		if (oDistance > MaxDistance) return false;
+
+		return oDistance <= MaxDistance;
 	}
 
 	static bool raycastCheck(jobject oTheWorld, jobject oEntityVec, jobject oPlayerVec) {

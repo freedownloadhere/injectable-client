@@ -4,6 +4,7 @@
 #include <iostream>
 #include <thread>
 #include <unordered_map>
+#include <map>
 
 #include "jni.h"
 #include "jvmti.h"
@@ -65,47 +66,13 @@ namespace Java {
 		STATIC = (1 << 0)
 	};
 
-	/// <summary>
-	/// code by Lefraudeur :
-	/// https://github.com/Lefraudeur 
-	/// </summary>
 	static jclass findClass(const std::string& path) {
-		static std::unordered_map<std::string, jclass> classMap;
+		jclass clazz = env->FindClass(path.c_str());
 
-		if (classMap.empty()) {
-			JavaVM* jvm = nullptr;
-			env->GetJavaVM(&jvm);
-			jvmtiEnv* tienv = nullptr;
-			jvm->GetEnv((void**)&tienv, JVMTI_VERSION_1_2);
-			jint classCount = 0;
-			jclass* classes = nullptr;
-			tienv->GetLoadedClasses(&classCount, &classes);
-			jclass ClassClass = env->FindClass("java/lang/Class");
-			jmethodID getName = env->GetMethodID(ClassClass, "getName", "()Ljava/lang/String;");
+		if (clazz == nullptr)
+			throw JavaException("Could not find class : " + path);
 
-			for (int i = 0; i < classCount; ++i) {
-				jstring name = (jstring)env->CallObjectMethod(classes[i], getName);
-				const char* chars = env->GetStringUTFChars(name, nullptr);
-				jsize size = env->GetStringUTFLength(name);
-				std::string className(chars, size);
-				env->ReleaseStringUTFChars(name, chars);
-				for (char& character : className) {
-					if (character == '.') 
-						character = '/';
-				}
-				classMap.insert({ className, classes[i] });
-			}
-			tienv->Deallocate((unsigned char*)classes);
-		}
-
-		jclass foundclass = nullptr;
-
-		if (!classMap.count(path)) {
-			throw JavaException("Class was not found: " + path);
-		}
-
-		foundclass = classMap.at(path);
-		return foundclass;
+		return clazz;
 	}
 
 	static jmethodID getMethodID(jclass clazz, const std::string& name, const std::string& sig, Flags flags = Flags::NONE) {
