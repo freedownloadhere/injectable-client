@@ -1,7 +1,5 @@
 #pragma once
-
-#include <Windows.h>
-#include <gl/GL.h>
+#include "pch.hpp"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_opengl3.h"

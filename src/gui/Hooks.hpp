@@ -1,8 +1,5 @@
 #pragma once
-
-#include <Windows.h>
-
-#include "MinHook.h"
+#include "pch.hpp"
 
 #include "HooksException.hpp"
 

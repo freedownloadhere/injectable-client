@@ -1,13 +1,8 @@
-#include <Windows.h>
-#include <thread>
-#include <stdio.h>
-#include <chrono>
-#include <iostream>
-#include <assert.h>
+#include "pch.hpp"
 
-#include "Hooks.hpp"
-#include "Java.hpp"
-#include "Killaura.hpp"
+#include "gui/Hooks.hpp"
+#include "java/Java.hpp"
+#include "modules/Killaura.hpp"
 
 void MainButForReal(HINSTANCE instance) {
 	FILE* in = nullptr, *out = nullptr, *err = nullptr;

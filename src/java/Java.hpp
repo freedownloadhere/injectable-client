@@ -1,10 +1,5 @@
 #pragma once
-
-#include <chrono>
-#include <iostream>
-#include <thread>
-#include <unordered_map>
-#include <map>
+#include "pch.hpp"
 
 #include "jni.h"
 #include "jvmti.h"

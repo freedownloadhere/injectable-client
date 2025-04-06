@@ -18,6 +18,15 @@
     <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gui\GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\Hooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pch\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="include\imgui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,30 +45,27 @@
     <ClCompile Include="include\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Hooks.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Java.hpp">
+    <ClInclude Include="src\java\Java.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Killaura.hpp">
+    <ClInclude Include="src\modules\Killaura.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\JavaException.hpp">
+    <ClInclude Include="src\java\JavaException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Hooks.hpp">
+    <ClInclude Include="src\gui\Hooks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\HooksException.hpp">
+    <ClInclude Include="src\gui\HooksException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GUI.hpp">
+    <ClInclude Include="src\gui\GUI.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pch\pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imconfig.h">

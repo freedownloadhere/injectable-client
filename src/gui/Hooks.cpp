@@ -1,8 +1,7 @@
+#include "pch.hpp"
 #include "Hooks.hpp"
 
-#include <iostream>
-#include <assert.h>
-#include <thread>
+#include "MinHook.h"
 
 void Hooks::init() {
 	windowHandle = FindWindowA(nullptr, "Minecraft 1.8.9");

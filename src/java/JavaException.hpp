@@ -1,11 +1,9 @@
 #pragma once
+#include "pch.hpp"
 
-#include <exception>
-#include <string>
-
-class HooksException : std::exception {
+class JavaException : std::exception {
 public:
-	HooksException(const std::string& reason = "Reason not specified")
+	JavaException(const std::string& reason = "Reason not specified")
 		: m_reason(reason) { }
 
 	const char* what() const throw() override {

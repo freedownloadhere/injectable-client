@@ -1,8 +1,7 @@
 #pragma once
+#include "pch.hpp"
 
-#include <thread>
-
-#include "Java.hpp"
+#include "java/Java.hpp"
 
 namespace Killaura {
 	const double MaxDistance = 3.0;

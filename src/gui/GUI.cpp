@@ -1,7 +1,5 @@
+#include "pch.hpp"
 #include "GUI.hpp"
-
-#include <iostream>
-#include <thread>
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
