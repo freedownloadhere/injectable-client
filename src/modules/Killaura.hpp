@@ -7,72 +7,82 @@ namespace Killaura {
 	const double MaxDistance = 3.0;
 
 	static bool goodEntityCheck(jobject oEntity, jobject oThePlayer) {
-		jboolean oIsEntityLiving = Java::env->IsInstanceOf(oEntity, Java::cEntityLivingBase);
+		const auto& java = Java::getInstance();
+
+		jboolean oIsEntityLiving = java.env->IsInstanceOf(oEntity, java.cEntityLivingBase);
 		if (!oIsEntityLiving) return false;
 
-		jboolean oIsEntityYou = Java::env->IsSameObject(oEntity, oThePlayer);
+		jboolean oIsEntityYou = java.env->IsSameObject(oEntity, oThePlayer);
 		if (oIsEntityYou) return false;
 
-		jboolean oIsEntityDead = Java::env->GetBooleanField(oEntity, Java::fIsDead);
+		jboolean oIsEntityDead = java.env->GetBooleanField(oEntity, java.fIsDead);
 		if (oIsEntityDead) return false;
 
 		return true;
 	}
 
 	static bool distanceCheck(jobject oEntityVec, jobject oPlayerVec) {
-		jdouble oDistance = Java::env->CallDoubleMethod(oEntityVec, Java::mDistanceTo, oPlayerVec);
+		const auto& java = Java::getInstance();
+
+		jdouble oDistance = java.env->CallDoubleMethod(oEntityVec, java.mDistanceTo, oPlayerVec);
 
 		return oDistance <= MaxDistance;
 	}
 
 	static bool raycastCheck(jobject oTheWorld, jobject oEntityVec, jobject oPlayerVec) {
-		jobject oMop = Java::env->CallObjectMethod(oTheWorld, Java::mRayTraceBlocks, oPlayerVec, oEntityVec);
+		const auto& java = Java::getInstance();
+
+		jobject oMop = java.env->CallObjectMethod(oTheWorld, java.mRayTraceBlocks, oPlayerVec, oEntityVec);
 		if (oMop == nullptr) return true;
 
-		jobject oTypeOfHit = Java::env->GetObjectField(oMop, Java::fTypeOfHit);
+		jobject oTypeOfHit = java.env->GetObjectField(oMop, java.fTypeOfHit);
 
-		jboolean oIsEntityHit = Java::env->IsSameObject(oTypeOfHit, Java::oMovingObjectPositionTypeEntity);
+		jboolean oIsEntityHit = java.env->IsSameObject(oTypeOfHit, java.oMovingObjectPositionTypeEntity);
 
 		return oIsEntityHit;
 	}
 
 	static void simulateAttack(jobject oEntity, jobject oThePlayer, jobject oSendQueue) {
-		jobject oAttackPacket = Java::env->NewObject(
-			Java::cC02PacketUseEntity, Java::mC02PacketUseEntity, 
-			oEntity, Java::oC02PacketUseEntityAttack
+		const auto& java = Java::getInstance();
+
+		jobject oAttackPacket = java.env->NewObject(
+			java.cC02PacketUseEntity, java.mC02PacketUseEntity, 
+			oEntity, java.oC02PacketUseEntityAttack
 		);
 
-		Java::env->CallVoidMethod(oThePlayer, Java::mSwingItem);
+		java.env->CallVoidMethod(oThePlayer, java.mSwingItem);
 
-		Java::env->CallVoidMethod(oSendQueue, Java::mAddToSendQueue, oAttackPacket);
+		java.env->CallVoidMethod(oSendQueue, java.mAddToSendQueue, oAttackPacket);
 
-		Java::env->DeleteLocalRef(oAttackPacket);
+		java.env->DeleteLocalRef(oAttackPacket);
 	}
 
 	void update() {
-		jobject oMinecraft = Java::env->CallStaticObjectMethod(Java::cMinecraft, Java::mGetMinecraft);
+		const auto& java = Java::getInstance();
+
+		jobject oMinecraft = java.env->CallStaticObjectMethod(java.cMinecraft, java.mGetMinecraft);
 		if (oMinecraft == nullptr) return;
 
-		jobject oThePlayer = Java::env->GetObjectField(oMinecraft, Java::fThePlayer);
+		jobject oThePlayer = java.env->GetObjectField(oMinecraft, java.fThePlayer);
 		if (oThePlayer == nullptr) return;
 
-		jobject oTheWorld = Java::env->GetObjectField(oMinecraft, Java::fTheWorld);
+		jobject oTheWorld = java.env->GetObjectField(oMinecraft, java.fTheWorld);
 		if (oTheWorld == nullptr) return;
 
-		jobject oPlayerVec = Java::env->CallObjectMethod(oThePlayer, Java::mGetPositionVector);
-		oPlayerVec = Java::env->CallObjectMethod(oPlayerVec, Java::mVec3Add, Java::oEyeHeightVector);
+		jobject oPlayerVec = java.env->CallObjectMethod(oThePlayer, java.mGetPositionVector);
+		oPlayerVec = java.env->CallObjectMethod(oPlayerVec, java.mVec3Add, java.oEyeHeightVector);
 
-		jobject oSendQueue = Java::env->GetObjectField(oThePlayer, Java::fSendQueue);
-		jobject oLoadedEntityList = Java::env->GetObjectField(oTheWorld, Java::fLoadedEntityList);
+		jobject oSendQueue = java.env->GetObjectField(oThePlayer, java.fSendQueue);
+		jobject oLoadedEntityList = java.env->GetObjectField(oTheWorld, java.fLoadedEntityList);
 
-		jint oListSize = Java::env->CallIntMethod(oLoadedEntityList, Java::mListSize);
+		jint oListSize = java.env->CallIntMethod(oLoadedEntityList, java.mListSize);
 
 		for (int i = 0; i < oListSize; i++) {
-			jobject oEntity = Java::env->CallObjectMethod(oLoadedEntityList, Java::mListGet, i);
+			jobject oEntity = java.env->CallObjectMethod(oLoadedEntityList, java.mListGet, i);
 			if (!goodEntityCheck(oEntity, oThePlayer)) continue;
 
-			jobject oEntityVec = Java::env->CallObjectMethod(oEntity, Java::mGetPositionVector);
-			oEntityVec = Java::env->CallObjectMethod(oEntityVec, Java::mVec3Add, Java::oEyeHeightVector);
+			jobject oEntityVec = java.env->CallObjectMethod(oEntity, java.mGetPositionVector);
+			oEntityVec = java.env->CallObjectMethod(oEntityVec, java.mVec3Add, java.oEyeHeightVector);
 			if (!distanceCheck(oEntityVec, oPlayerVec)) continue;
 
 			if (!raycastCheck(oTheWorld, oEntityVec, oPlayerVec)) continue;

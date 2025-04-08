@@ -182,6 +182,7 @@
     </ClCompile>
     <ClCompile Include="src\gui\GUI.cpp" />
     <ClCompile Include="src\gui\Hooks.cpp" />
+    <ClCompile Include="src\java\Java.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\pch\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

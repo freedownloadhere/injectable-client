@@ -13,10 +13,10 @@ void MainButForReal(HINSTANCE instance) {
 	freopen_s(&err, "CONOUT$", "w", stderr);
 
 	try {
-		Java::init();
+		Java::getInstance().initialize();
 		std::cout << "Initialized Java\n";
-		Hooks::init();
-		std::cout << "Initialized Hooks\n";
+		//Hooks::init();
+		//std::cout << "Initialized Hooks\n";
 	}
 	catch(const JavaException& e) {
 		std::cerr << "Java Error: " << e.what() << '\n';
@@ -39,7 +39,7 @@ void MainButForReal(HINSTANCE instance) {
 	}
 
 finish:
-	Hooks::destroy();
+	//Hooks::destroy();
 	if(in) fclose(in);
 	if(out) fclose(out);
 	if(err) fclose(err);
