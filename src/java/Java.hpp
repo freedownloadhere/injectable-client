@@ -15,6 +15,7 @@ class Java {
 public:
 	static Java& getInstance();
 	void initialize();
+	void cleanup();
 
 	JavaVM* jvm = nullptr;
 	JNIEnv* env = nullptr;
@@ -62,14 +63,14 @@ public:
 	jobject oMovingObjectPositionTypeEntity = nullptr;
 
 private:
-	Java() = default;
-
 	static Java m_instance;
 
 	enum Flags {
 		NONE = 0,
 		STATIC = (1 << 0)
 	};
+
+	Java() = default;
 
 	jclass m_findClass(const std::string& path);
 

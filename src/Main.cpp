@@ -39,6 +39,7 @@ void MainButForReal(HINSTANCE instance) {
 	}
 
 finish:
+	Java::getInstance().cleanup();
 	//Hooks::destroy();
 	if(in) fclose(in);
 	if(out) fclose(out);
