@@ -48,6 +48,9 @@
     <ClCompile Include="src\java\Java.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\java\ClassFinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\java\Java.hpp">
@@ -96,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\imgui\imstb_truetype.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\java\ClassFinder.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

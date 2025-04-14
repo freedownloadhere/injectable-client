@@ -182,6 +182,7 @@
     </ClCompile>
     <ClCompile Include="src\gui\GUI.cpp" />
     <ClCompile Include="src\gui\Hooks.cpp" />
+    <ClCompile Include="src\java\ClassFinder.cpp" />
     <ClCompile Include="src\java\Java.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\pch\pch.cpp">
@@ -202,6 +203,7 @@
     <ClInclude Include="src\gui\GUI.hpp" />
     <ClInclude Include="src\gui\Hooks.hpp" />
     <ClInclude Include="src\gui\HooksException.hpp" />
+    <ClInclude Include="src\java\ClassFinder.hpp" />
     <ClInclude Include="src\java\Java.hpp" />
     <ClInclude Include="src\java\JavaException.hpp" />
     <ClInclude Include="src\modules\Killaura.hpp" />

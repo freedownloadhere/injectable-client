@@ -63,18 +63,17 @@ public:
 	jobject oMovingObjectPositionTypeEntity = nullptr;
 
 private:
-	static Java m_instance;
-
-	enum Flags {
-		NONE = 0,
-		STATIC = (1 << 0)
-	};
+	jclass m_cClass = nullptr;
+	jmethodID m_mForName = nullptr;
+	jobject m_oClassLoader = nullptr;
 
 	Java() = default;
 
+	void m_findClassLoaderOf(std::string_view qualifiedName);
+
 	jclass m_findClass(const std::string& path);
 
-	jmethodID m_getMethodID(jclass clazz, const std::string& name, const std::string& sig, Flags flags = Flags::NONE);
+	jmethodID m_getMethodID(jclass clazz, const std::string& name, const std::string& sig);
 
-	jfieldID m_getFieldID(jclass clazz, const std::string& name, const std::string& sig, Flags flags = Flags::NONE);
+	jfieldID m_getFieldID(jclass clazz, const std::string& name, const std::string& sig);
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.hpp"
 
-class JavaException : std::exception {
+class JavaException : public std::exception {
 public:
 	JavaException(const std::string& reason = "Reason not specified")
 		: m_reason(reason) { }

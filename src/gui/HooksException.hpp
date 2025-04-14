@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.hpp"
 
-class HooksException : std::exception {
+class HooksException : public std::exception {
 public:
 	HooksException(const std::string& reason = "Reason not specified")
 		: m_reason(reason) { }
