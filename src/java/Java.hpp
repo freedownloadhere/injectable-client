@@ -6,11 +6,6 @@
 
 #include "JavaException.hpp"
 
-/// <summary>
-/// Some naming conventions (prefixes) are used:
-/// c for class, m for method ID, f for field ID and o for object.
-/// I will try to stick as closely as possible to the original Java names.
-/// </summary>
 class Java {
 public:
 	static Java& getInstance();

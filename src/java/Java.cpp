@@ -1,7 +1,8 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 #include "pch.hpp"
-#include "Java.hpp"
+#include "java/Java.hpp"
+#include "mapper/Mapper.hpp"
 
 Java& Java::getInstance() {
 	static Java instance;
