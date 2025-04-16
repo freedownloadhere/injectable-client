@@ -4,7 +4,7 @@
 #include "jni.h"
 #include "jvmti.h"
 
-#include "JavaException.hpp"
+#include "exception/JavaException.hpp"
 
 class Java {
 public:

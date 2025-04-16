@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -190,10 +190,9 @@
     </ClCompile>
     <ClCompile Include="src\gui\GUI.cpp" />
     <ClCompile Include="src\gui\Hooks.cpp" />
-    <ClCompile Include="src\java\ClassFinder.cpp" />
     <ClCompile Include="src\java\Java.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\mapper\Mapper.cpp" />
+    <ClCompile Include="src\modules\Killaura.cpp" />
     <ClCompile Include="src\pch\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.hpp</PrecompiledHeaderFile>
@@ -210,13 +209,14 @@
     <ClInclude Include="include\imgui\imstb_rectpack.h" />
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\exception\Exception.hpp" />
+    <ClInclude Include="src\exception\HooksException.hpp" />
+    <ClInclude Include="src\exception\JavaException.hpp" />
     <ClInclude Include="src\gui\GUI.hpp" />
     <ClInclude Include="src\gui\Hooks.hpp" />
     <ClInclude Include="src\gui\HooksException.hpp" />
-    <ClInclude Include="src\java\ClassFinder.hpp" />
     <ClInclude Include="src\java\Java.hpp" />
     <ClInclude Include="src\java\JavaException.hpp" />
-    <ClInclude Include="src\mapper\Mapper.hpp" />
     <ClInclude Include="src\modules\Killaura.hpp" />
     <ClInclude Include="src\pch\pch.hpp" />
   </ItemGroup>

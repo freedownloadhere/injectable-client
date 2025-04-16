@@ -48,10 +48,7 @@
     <ClCompile Include="src\java\Java.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\java\ClassFinder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\mapper\Mapper.cpp">
+    <ClCompile Include="src\modules\Killaura.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,10 +101,13 @@
     <ClInclude Include="include\imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\java\ClassFinder.hpp">
+    <ClInclude Include="src\exception\Exception.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\mapper\Mapper.hpp">
+    <ClInclude Include="src\exception\HooksException.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\exception\JavaException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

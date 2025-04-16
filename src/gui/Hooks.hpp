@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.hpp"
 
-#include "HooksException.hpp"
+#include "exception/HooksException.hpp"
 
 namespace Hooks {
 	using tWndProc = WNDPROC;
